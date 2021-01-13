@@ -13,6 +13,8 @@ public class User {
 
     private String login;
 
+    private String password;
+
     private String firstName;
 
     private String lastName;
@@ -23,9 +25,20 @@ public class User {
 
     private boolean active;
 
-    public User(UUID uuid, String login, String firstName, String lastName, String email, Type type, boolean active) {
+    public User(
+            UUID uuid,
+            String login,
+            String password,
+            String firstName,
+            String lastName,
+            String email,
+            Type type,
+            boolean active
+    ) {
+
         this.uuid = uuid;
         this.login = login;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -33,9 +46,18 @@ public class User {
         this.active = active;
     }
 
-    public User(String login, String firstName, String lastName, String email, Type type, boolean active) {
+    public User(
+            String login,
+            String password,
+            String firstName,
+            String lastName,
+            String email,
+            Type type,
+            boolean active
+    ) {
         this.uuid = UUID.randomUUID();
         this.login = login;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -99,10 +121,19 @@ public class User {
         this.uuid = uuid;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public User copy() {
         return new User(
                 uuid,
                 login,
+                password,
                 firstName,
                 lastName,
                 email,
@@ -128,9 +159,11 @@ public class User {
         return "User{" +
                 "uuid=" + uuid +
                 ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", type=" + type +
                 ", active=" + active +
                 '}';
     }

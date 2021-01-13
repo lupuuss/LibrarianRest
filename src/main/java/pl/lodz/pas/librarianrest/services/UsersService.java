@@ -2,7 +2,6 @@ package pl.lodz.pas.librarianrest.services;
 
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectAlreadyExistsException;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectNotFoundException;
-import pl.lodz.pas.librarianrest.repository.user.User;
 import pl.lodz.pas.librarianrest.repository.user.UsersRepository;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
 
@@ -18,36 +17,19 @@ public class UsersService {
     @Inject
     private UsersRepository repository;
 
-    private User.Type mapType(UserDto.Type type) {
-        return User.Type.valueOf(type.name());
-    }
-
-    private UserDto.Type mapType(User.Type type) {
-        return UserDto.Type.valueOf(type.name());
-    }
+    @Inject
+    private DtoMapper mapper;
 
     public List<UserDto> getAllUsers() {
         return repository.findAllUsers()
                 .stream()
-                .map(user -> new UserDto(
-                        user.getLogin(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail(),
-                        mapType(user.getType()),
-                        user.isActive()
-                )).collect(Collectors.toList());
+                .map(user -> mapper.map(user))
+                .collect(Collectors.toList());
     }
 
     public boolean addUser(UserDto user) {
 
-        var newUser = new User(
-                user.getLogin(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getEmail(),
-                mapType(user.getType()), user.isActive()
-        );
+        var newUser = mapper.map(user);
 
         try {
             repository.addUser(newUser);
@@ -83,44 +65,29 @@ public class UsersService {
 
         return repository.findUserByLoginContains(query)
                 .stream()
-                .map(user -> new UserDto(
-                        user.getLogin(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail(),
-                        mapType(user.getType()),
-                        user.isActive()
-                ))
+                .map(user -> mapper.map(user))
                 .collect(Collectors.toList());
     }
 
     public Optional<UserDto> getUserByLogin(String loginToEdit) {
         return repository.findUserByLogin(loginToEdit)
-                .map(user -> new UserDto(
-                        user.getLogin(),
-                        user.getFirstName(),
-                        user.getLastName(),
-                        user.getEmail(),
-                        mapType(user.getType()),
-                        user.isActive()
-                ));
+                .map(user -> mapper.map(user));
     }
 
     public boolean updateUserByLogin(UserDto userDto) {
 
-        var optUser = repository.findUserByLogin(userDto.getLogin());
+        var login = userDto.getLogin();
+
+        var optUser = repository.findUserByLogin(login);
 
         if (optUser.isEmpty()) {
             return false;
         }
 
-        var user = optUser.get();
+        var user = mapper.map(userDto);
 
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setActive(userDto.isActive());
-        user.setEmail(userDto.getEmail());
-        user.setType(mapType(userDto.getType()));
+        // makes sure that login will not be overwritten
+        user.setLogin(login);
 
         try {
             repository.updateUser(user);

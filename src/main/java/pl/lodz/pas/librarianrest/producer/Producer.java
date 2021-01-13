@@ -20,16 +20,16 @@ public class Producer {
     public Consumer<List<User>> produceUsersInitializer() {
         return (users) -> {
 
-            users.add(new User("admin", "Jan", "Kowalski",
+            users.add(new User("admin", "admin", "Jan", "Kowalski",
                     "jan.kowalski@wp.pl", User.Type.ADMIN, true));
 
-            users.add(new User("joe", "Joe", "Doe",
+            users.add(new User("joe", "joe", "Joe", "Doe",
                     "joe.doe@gmail.com", User.Type.EMPLOYEE, true));
 
-            users.add(new User("kid", "Some", "Kid",
+            users.add(new User("kid", "kid", "Some", "Kid",
                     "some.kid@yeet.com", User.Type.USER, true));
 
-            users.add(new User("yeet", "Yeet", "Kid",
+            users.add(new User("yeet", "yeet", "Yeet", "Kid",
                     "yeet.kid@yeet.com", User.Type.USER, true));
         };
     }

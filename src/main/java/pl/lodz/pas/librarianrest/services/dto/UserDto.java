@@ -8,6 +8,8 @@ public class UserDto {
 
     private String login;
 
+    private String password;
+
     private String firstName;
 
     private String lastName;
@@ -18,8 +20,9 @@ public class UserDto {
 
     private boolean active;
 
-    public UserDto(String login, String firstName, String lastName, String email, Type type, boolean active) {
+    public UserDto(String login, String password, String firstName, String lastName, String email, Type type, boolean active) {
         this.login = login;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -77,4 +80,13 @@ public class UserDto {
     public void setType(Type type) {
         this.type = type;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }
