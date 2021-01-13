@@ -77,6 +77,7 @@ public class UsersController {
 
         return Response
                 .status(Response.Status.BAD_REQUEST)
+                .entity(new Message("User couldn't be added! Probably already exists."))
                 .build();
     }
 
@@ -84,16 +85,16 @@ public class UsersController {
     @Path("/users/activate")
     public Response activateUsers(List<String> usersToActivate) {
 
-        service.updateUsersActive(usersToActivate, true);
+        var i = service.updateUsersActive(usersToActivate, true);
 
-        return Response.ok().build();
+        return Response.ok().entity(new Message("Updated objects: " + i)).build();
     }
 
     @PATCH
     @Path("/users/deactivate")
     public Response deactivateUsers(List<String> usersToActivate) {
-        service.updateUsersActive(usersToActivate, false);
+        var i = service.updateUsersActive(usersToActivate, false);
 
-        return Response.ok().build();
+        return Response.ok().entity(new Message("Updated objects: " + i)).build();
     }
 }

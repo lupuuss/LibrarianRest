@@ -74,6 +74,7 @@ public class ElementsController {
         } else {
             return Response
                     .status(Response.Status.BAD_REQUEST)
+                    .entity(new Message("Element could not be added! Probably object already exits."))
                     .build();
         }
     }
@@ -100,6 +101,7 @@ public class ElementsController {
         } else {
             return Response
                     .status(Response.Status.BAD_REQUEST)
+                    .entity(new Message("Object couldn't be updated! Probably doesn't exits."))
                     .build();
         }
     }

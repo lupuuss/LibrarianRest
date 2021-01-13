@@ -41,21 +41,28 @@ public class UsersService {
         }
     }
 
-    public void updateUsersActive(List<String> toUpdate, boolean active) {
+    public int updateUsersActive(List<String> toUpdate, boolean active) {
+
+        int i = 0;
 
         for (var user : toUpdate) {
             var foundUser = repository.findUserByLogin(user);
 
-            foundUser.ifPresent(userToUpdate -> {
-                userToUpdate.setActive(active);
+            if (foundUser.isEmpty()) continue;
 
-                try {
-                    repository.updateUser(userToUpdate);
-                } catch (ObjectNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
+            var userToUpdate = foundUser.get();
+
+            userToUpdate.setActive(active);
+
+            try {
+                repository.updateUser(userToUpdate);
+                i++;
+            } catch (ObjectNotFoundException e) {
+                e.printStackTrace();
+            }
         }
+
+        return i;
     }
 
     public List<UserDto> getUsersByLoginContains(String query) {
