@@ -31,6 +31,7 @@
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Safe read-only</web-resource-name>
+            <url-pattern>/user/self</url-pattern>
             <url-pattern>/book/*</url-pattern>
             <url-pattern>/magazine/*</url-pattern>
             <url-pattern>/element/*</url-pattern>
@@ -40,6 +41,17 @@
             <role-name>ADMIN</role-name>
             <role-name>EMPLOYEE</role-name>
             <role-name>USER</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Admin resources</web-resource-name>
+            <url-pattern>/user/*</url-pattern>
+            <url-pattern>/users/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ADMIN</role-name>
         </auth-constraint>
     </security-constraint>
 
