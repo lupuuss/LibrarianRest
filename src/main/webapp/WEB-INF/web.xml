@@ -6,4 +6,52 @@
     <default-context-path>
         api/librarian
     </default-context-path>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Any page</web-resource-name>
+            <url-pattern>/*</url-pattern>
+        </web-resource-collection>
+        <user-data-constraint>
+            <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+
+    <security-role>
+        <role-name>ADMIN</role-name>
+    </security-role>
+    <security-role>
+        <role-name>EMPLOYEE</role-name>
+    </security-role>
+    <security-role>
+        <role-name>USER</role-name>
+    </security-role>
+
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Safe read-only</web-resource-name>
+            <url-pattern>/book/*</url-pattern>
+            <url-pattern>/magazine/*</url-pattern>
+            <url-pattern>/element/*</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ADMIN</role-name>
+            <role-name>EMPLOYEE</role-name>
+            <role-name>USER</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Employee resources</web-resource-name>
+            <url-pattern>/book/*</url-pattern>
+            <url-pattern>/magazine/*</url-pattern>
+            <url-pattern>/element/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>EMPLOYEE</role-name>
+        </auth-constraint>
+    </security-constraint>
 </web-app>

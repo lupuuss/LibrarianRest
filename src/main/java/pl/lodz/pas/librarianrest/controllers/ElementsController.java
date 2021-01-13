@@ -1,10 +1,12 @@
 package pl.lodz.pas.librarianrest.controllers;
 
+import pl.lodz.pas.librarianrest.repository.user.User;
 import pl.lodz.pas.librarianrest.services.ElementsService;
 import pl.lodz.pas.librarianrest.services.dto.BookDto;
 import pl.lodz.pas.librarianrest.services.dto.ElementDto;
 import pl.lodz.pas.librarianrest.services.dto.MagazineDto;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
