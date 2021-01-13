@@ -18,8 +18,7 @@ public class HelloController {
         }
     }
 
-    @GET()
-    @Produces("application/json")
+    @GET
     public HelloObject hello() {
         return new HelloObject();
     }
