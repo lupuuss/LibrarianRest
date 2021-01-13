@@ -144,15 +144,14 @@ public class ElementsService {
                 .collect(Collectors.toList());
     }
 
-    private void degradeBookCopy(BookDto bookDto, ElementCopyDto copy) {
+    public boolean degradeBookCopy(String isbn, int number) {
 
         var toUpdate = booksRepository.findBookCopyByIsbnAndNumber(
-                bookDto.getIsbn(),
-                copy.getNumber()
+                isbn, number
         );
 
         if (toUpdate.isEmpty()) {
-            return;
+            return false;
         }
 
         var bookCopy = toUpdate.get();
@@ -162,20 +161,22 @@ public class ElementsService {
 
         try {
             booksRepository.updateBookCopy(bookCopy);
+            return true;
         } catch (RepositoryException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void degradeMagazineCopy(MagazineDto magazineDto, ElementCopyDto copy) {
+    public boolean degradeMagazineCopy(String issn, int issue, int number) {
         var toUpdate = magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(
-                magazineDto.getIssn(),
-                magazineDto.getIssue(),
-                copy.getNumber()
+                issn,
+                issue,
+                number
         );
 
         if (toUpdate.isEmpty()) {
-            return;
+            return false;
         }
 
         var magazineCopy = toUpdate.get();
@@ -185,8 +186,10 @@ public class ElementsService {
 
         try {
             magazinesRepository.updateMagazineCopy(magazineCopy);
+            return true;
         } catch (RepositoryException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -198,58 +201,19 @@ public class ElementsService {
 
                 var book = (BookDto) copy.getElement();
 
-                degradeBookCopy(book, copy);
+                degradeBookCopy(book.getIsbn(), copy.getNumber());
 
             } else if(copy.getElement() instanceof MagazineDto) {
 
                 var magazine = (MagazineDto) copy.getElement();
 
-                degradeMagazineCopy(magazine, copy);
+                degradeMagazineCopy(magazine.getIssn(), magazine.getIssue(), copy.getNumber());
 
             } else {
                 throw new IllegalStateException("Unsupported element type!");
             }
         }
 
-    }
-
-    private void deleteBookCopy(ElementCopyDto copy) {
-        var book = (BookDto) copy.getElement();
-        var toRemove = booksRepository.findBookCopyByIsbnAndNumber(
-                book.getIsbn(),
-                copy.getNumber()
-        );
-
-        if (toRemove.isEmpty()) {
-            return;
-        }
-
-        try {
-            booksRepository.deleteBookCopy(toRemove.get());
-            eventsRepository.clearDanglingReferencesFor(toRemove.get().getUuid());
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteMagazineCopy(ElementCopyDto copy) {
-        var magazine = (MagazineDto) copy.getElement();
-        var toRemove = magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(
-                magazine.getIssn(),
-                magazine.getIssue(),
-                copy.getNumber()
-        );
-
-        if (toRemove.isEmpty()) {
-            return;
-        }
-
-        try {
-            magazinesRepository.deleteMagazineCopy(toRemove.get());
-            eventsRepository.clearDanglingReferencesFor(toRemove.get().getUuid());
-        } catch (RepositoryException e) {
-            e.printStackTrace();
-        }
     }
 
     public void deleteCopies(List<ElementCopyDto> copies) {
@@ -258,11 +222,15 @@ public class ElementsService {
 
             if (copy.getElement() instanceof BookDto) {
 
-                deleteBookCopy(copy);
+                var book = (BookDto) copy.getElement();
+
+                deleteBookCopy(book.getIsbn(), copy.getNumber());
 
             } else if(copy.getElement() instanceof MagazineDto) {
 
-                deleteMagazineCopy(copy);
+                var magazine = (MagazineDto) copy.getElement();
+
+                deleteMagazineCopy(magazine.getIssn(), magazine.getIssue(), copy.getNumber());
 
             } else {
                 throw new IllegalStateException("Unsupported element type!");
@@ -270,6 +238,49 @@ public class ElementsService {
         }
 
 
+    }
+
+    public boolean deleteBookCopy(String isbn, int number) {
+
+        var toRemove = booksRepository.findBookCopyByIsbnAndNumber(
+                isbn,
+                number
+        );
+
+        if (toRemove.isEmpty()) {
+            return true;
+        }
+
+        try {
+            booksRepository.deleteBookCopy(toRemove.get());
+            eventsRepository.clearDanglingReferencesFor(toRemove.get().getUuid());
+            return true;
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteMagazineCopy(String issn, int issue, int number) {
+
+        var toRemove = magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(
+                issn,
+                issue,
+                number
+        );
+
+        if (toRemove.isEmpty()) {
+            return true;
+        }
+
+        try {
+            magazinesRepository.deleteMagazineCopy(toRemove.get());
+            eventsRepository.clearDanglingReferencesFor(toRemove.get().getUuid());
+            return true;
+        } catch (RepositoryException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public Map<ElementDto, Long> getAvailableCopiesCount() {
