@@ -8,11 +8,11 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Stateless
 @Named
@@ -21,6 +21,22 @@ public class UsersController {
 
     @Inject
     private UsersService service;
+
+    @Context
+    SecurityContext context;
+
+    @GET
+    @Path("/user/self")
+    public Response getSelfUserInfo() {
+
+        var principle = context.getUserPrincipal();
+
+        if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        var user = service.getUserByLogin(principle.getName());
+
+        return Response.ok(user).build();
+    }
 
     @GET
     @Path("/user")
@@ -67,7 +83,7 @@ public class UsersController {
     @PATCH
     @Path("/users/activate")
     public Response activateUsers(List<String> usersToActivate) {
-        
+
         service.updateUsersActive(usersToActivate, true);
 
         return Response.ok().build();
