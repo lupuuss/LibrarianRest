@@ -1,0 +1,83 @@
+package pl.lodz.pas.librarianrest.controllers;
+
+import pl.lodz.pas.librarianrest.services.UsersService;
+import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
+import pl.lodz.pas.librarianrest.services.dto.UserDto;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
+import java.util.List;
+import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@Stateless
+@Named
+@Path("")
+public class UsersController {
+
+    @Inject
+    private UsersService service;
+
+    @GET
+    @Path("/user")
+    public List<UserDto> getUsers(@QueryParam("query") String query) {
+        return service.getUsersByLoginContains(query);
+    }
+
+    @GET
+    @Path("/user/{login}")
+    public Optional<UserDto> getUser(@PathParam("login") String login) {
+        return service.getUserByLogin(login);
+    }
+
+    @PUT
+    @Path("/user/{login}")
+    public Response updateUser(@PathParam("login") String login, NewUserDto newUser) {
+
+        if (service.updateUserByLogin(newUser)) {
+            return Response
+                    .ok()
+                    .build();
+        }
+
+        return Response
+                .status(Response.Status.BAD_REQUEST)
+                .build();
+    }
+
+    @POST
+    @Path("/user")
+    public Response addUser(NewUserDto newUser) {
+
+        if (service.addUser(newUser)) {
+            return Response
+                    .ok()
+                    .build();
+        }
+
+        return Response
+                .status(Response.Status.BAD_REQUEST)
+                .build();
+    }
+
+    @PATCH
+    @Path("/users/activate")
+    public Response activateUsers(List<String> usersToActivate) {
+        
+        service.updateUsersActive(usersToActivate, true);
+
+        return Response.ok().build();
+    }
+
+    @PATCH
+    @Path("/users/deactivate")
+    public Response deactivateUsers(List<String> usersToActivate) {
+        service.updateUsersActive(usersToActivate, false);
+
+        return Response.ok().build();
+    }
+}

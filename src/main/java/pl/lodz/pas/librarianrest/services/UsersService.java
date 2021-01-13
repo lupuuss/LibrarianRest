@@ -3,6 +3,7 @@ package pl.lodz.pas.librarianrest.services;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectAlreadyExistsException;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectNotFoundException;
 import pl.lodz.pas.librarianrest.repository.user.UsersRepository;
+import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
 
 import javax.enterprise.context.RequestScoped;
@@ -27,7 +28,7 @@ public class UsersService {
                 .collect(Collectors.toList());
     }
 
-    public boolean addUser(UserDto user) {
+    public boolean addUser(NewUserDto user) {
 
         var newUser = mapper.map(user);
 
@@ -40,10 +41,10 @@ public class UsersService {
         }
     }
 
-    public void updateUsersActive(List<UserDto> toUpdate, boolean active) {
+    public void updateUsersActive(List<String> toUpdate, boolean active) {
 
         for (var user : toUpdate) {
-            var foundUser = repository.findUserByLogin(user.getLogin());
+            var foundUser = repository.findUserByLogin(user);
 
             foundUser.ifPresent(userToUpdate -> {
                 userToUpdate.setActive(active);
@@ -74,7 +75,7 @@ public class UsersService {
                 .map(user -> mapper.map(user));
     }
 
-    public boolean updateUserByLogin(UserDto userDto) {
+    public boolean updateUserByLogin(NewUserDto userDto) {
 
         var login = userDto.getLogin();
 
@@ -85,9 +86,6 @@ public class UsersService {
         }
 
         var user = mapper.map(userDto);
-
-        // makes sure that login will not be overwritten
-        user.setLogin(login);
 
         try {
             repository.updateUser(user);

@@ -5,6 +5,7 @@ import pl.lodz.pas.librarianrest.repository.books.data.Magazine;
 import pl.lodz.pas.librarianrest.repository.user.User;
 import pl.lodz.pas.librarianrest.services.dto.BookDto;
 import pl.lodz.pas.librarianrest.services.dto.MagazineDto;
+import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
 
 import javax.enterprise.context.RequestScoped;
@@ -41,7 +42,6 @@ public class DtoMapper {
     public UserDto map(User user) {
         return  new UserDto(
                 user.getLogin(),
-                user.getPassword(),
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),
@@ -51,6 +51,17 @@ public class DtoMapper {
     }
 
     public User map(UserDto user) {
+        return new User(
+                user.getLogin(),
+                null,
+                user.getFirstName(),
+                user.getLastName(),
+                user.getEmail(),
+                mapType(user.getType()), user.isActive()
+        );
+    }
+
+    public User map(NewUserDto user) {
         return new User(
                 user.getLogin(),
                 user.getPassword(),
