@@ -1,7 +1,6 @@
 package pl.lodz.pas.librarianrest.controllers;
 
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

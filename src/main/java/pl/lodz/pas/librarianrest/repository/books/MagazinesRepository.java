@@ -1,6 +1,5 @@
 package pl.lodz.pas.librarianrest.repository.books;
 
-import pl.lodz.pas.librarianrest.repository.books.data.BookCopy;
 import pl.lodz.pas.librarianrest.repository.books.data.Magazine;
 import pl.lodz.pas.librarianrest.repository.books.data.MagazineCopy;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectAlreadyExistsException;

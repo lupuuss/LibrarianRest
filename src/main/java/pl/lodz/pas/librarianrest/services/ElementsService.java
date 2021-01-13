@@ -4,7 +4,6 @@ import pl.lodz.pas.librarianrest.repository.books.BooksRepository;
 import pl.lodz.pas.librarianrest.repository.books.MagazinesRepository;
 import pl.lodz.pas.librarianrest.repository.books.data.Book;
 import pl.lodz.pas.librarianrest.repository.books.data.BookCopy;
-import pl.lodz.pas.librarianrest.repository.books.data.Magazine;
 import pl.lodz.pas.librarianrest.repository.books.data.MagazineCopy;
 import pl.lodz.pas.librarianrest.repository.events.EventsRepository;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectAlreadyExistsException;

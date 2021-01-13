@@ -8,8 +8,6 @@ import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 import java.util.Collections;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static javax.security.enterprise.identitystore.IdentityStore.ValidationType.PROVIDE_GROUPS;
 
