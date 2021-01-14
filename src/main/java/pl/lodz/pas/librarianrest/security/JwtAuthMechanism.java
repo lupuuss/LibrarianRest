@@ -2,7 +2,7 @@ package pl.lodz.pas.librarianrest.security;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationException;
 import javax.security.enterprise.AuthenticationStatus;
@@ -10,12 +10,13 @@ import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticatio
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
 import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
 import javax.security.enterprise.identitystore.IdentityStoreHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-@RequestScoped
+@ApplicationScoped
 public class JwtAuthMechanism implements HttpAuthenticationMechanism {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -33,7 +34,7 @@ public class JwtAuthMechanism implements HttpAuthenticationMechanism {
             HttpServletRequest request,
             HttpServletResponse response,
             HttpMessageContext context
-    ) throws AuthenticationException {
+    ) {
 
         String login = request.getParameter("login");
         String password = request.getParameter("password");
@@ -74,6 +75,7 @@ public class JwtAuthMechanism implements HttpAuthenticationMechanism {
     }
 
     private AuthenticationStatus validateToken(String token, HttpMessageContext context) {
+
         try {
 
             if (tokenProvider.validateToken(token)) {

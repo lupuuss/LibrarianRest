@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+@ApplicationScoped
 public class TokenProvider {
 
 
@@ -20,7 +22,6 @@ public class TokenProvider {
     private Key secretKey;
 
     private long tokenValidity;
-
 
     @PostConstruct
     public void init() {
