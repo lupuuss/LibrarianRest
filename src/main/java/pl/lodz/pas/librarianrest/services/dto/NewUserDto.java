@@ -1,7 +1,10 @@
 package pl.lodz.pas.librarianrest.services.dto;
 
+import javax.validation.constraints.NotEmpty;
+
 public class NewUserDto extends UserDto {
 
+    @NotEmpty
     private String password;
 
     public NewUserDto() {

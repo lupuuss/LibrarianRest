@@ -7,6 +7,7 @@ import pl.lodz.pas.librarianrest.services.dto.UserDto;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -52,7 +53,7 @@ public class UsersController {
 
     @PUT
     @Path("/user/{login}")
-    public Response updateUser(@PathParam("login") String login, NewUserDto newUser) {
+    public Response updateUser(@PathParam("login") String login, @Valid NewUserDto newUser) {
 
         if (service.updateUserByLogin(newUser)) {
             return Response
@@ -67,7 +68,7 @@ public class UsersController {
 
     @POST
     @Path("/user")
-    public Response addUser(NewUserDto newUser) {
+    public Response addUser(@Valid NewUserDto newUser) {
 
         if (service.addUser(newUser)) {
             return Response

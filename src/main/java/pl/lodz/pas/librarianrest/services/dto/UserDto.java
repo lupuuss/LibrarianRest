@@ -1,22 +1,32 @@
 package pl.lodz.pas.librarianrest.services.dto;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class UserDto {
 
     public enum Type {
         ADMIN, EMPLOYEE, USER
     }
 
+    @NotEmpty
     private String login;
 
+    @NotEmpty
     private String firstName;
 
+    @NotEmpty
     private String lastName;
 
+    @Email
     private String email;
 
+    @NotNull
     private Type type;
 
-    private boolean active;
+    @NotNull
+    private Boolean active;
 
     public UserDto(String login, String firstName, String lastName, String email, Type type, boolean active) {
         this.login = login;
