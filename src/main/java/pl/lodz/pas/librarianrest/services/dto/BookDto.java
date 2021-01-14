@@ -1,11 +1,15 @@
 package pl.lodz.pas.librarianrest.services.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.util.Comparator;
 
 public class BookDto extends ElementDto {
 
+    @Pattern(regexp = "([a-zA-Z0-9]{8})", message = "Invalid isbn! Required 8 alphanumeric chars!")
     private String isbn;
 
+    @NotBlank
     private String author;
 
     public BookDto(String title, String publisher, String isbn, String author) {

@@ -1,10 +1,13 @@
 package pl.lodz.pas.librarianrest.services.dto;
 
+import javax.validation.constraints.Pattern;
 import java.util.Comparator;
 
 public class MagazineDto extends  ElementDto{
 
+    @Pattern(regexp = "([a-zA-Z0-9]{8})", message = "Invalid issn! Required 8 alphanumeric chars!")
     private  String issn;
+
     private  int issue;
 
     public MagazineDto(String title, String publisher, String issn, int issue) {

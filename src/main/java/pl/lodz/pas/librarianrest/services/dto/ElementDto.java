@@ -1,8 +1,15 @@
 package pl.lodz.pas.librarianrest.services.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public abstract class ElementDto implements Comparable<ElementDto> {
 
+    @NotBlank
     private String title;
+
+    @NotBlank
     private String publisher;
 
     public ElementDto(String title, String publisher) {

@@ -8,6 +8,7 @@ import pl.lodz.pas.librarianrest.services.dto.MagazineDto;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -54,14 +55,14 @@ public class ElementsController {
 
     @POST
     @Path("/book")
-    public Response addBook(BookDto bookDto) {
+    public Response addBook(@Valid BookDto bookDto) {
 
         return addElement(bookDto);
     }
 
     @POST
     @Path("/magazine")
-    public Response addMagazine(MagazineDto magazineDto) {
+    public Response addMagazine(@Valid MagazineDto magazineDto) {
 
         return addElement(magazineDto);
     }
@@ -81,19 +82,19 @@ public class ElementsController {
 
     @PUT
     @Path("/magazine")
-    public Response updateMagazine(MagazineDto magazineDto) {
+    public Response updateMagazine(@Valid MagazineDto magazineDto) {
 
         return updateElement(magazineDto);
     }
 
     @PUT
     @Path("/book")
-    public Response updateBook(BookDto bookDto) {
+    public Response updateBook(@Valid BookDto bookDto) {
 
         return updateElement(bookDto);
     }
 
-    public Response updateElement(ElementDto elementDto) {
+    private Response updateElement(ElementDto elementDto) {
         var ok = service.updateElement(elementDto);
 
         if (ok) {
