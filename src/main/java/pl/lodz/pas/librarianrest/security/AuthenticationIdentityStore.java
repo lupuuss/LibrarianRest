@@ -3,7 +3,6 @@ package pl.lodz.pas.librarianrest.security;
 import pl.lodz.pas.librarianrest.repository.user.User;
 import pl.lodz.pas.librarianrest.repository.user.UsersRepository;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.security.enterprise.credential.Credential;

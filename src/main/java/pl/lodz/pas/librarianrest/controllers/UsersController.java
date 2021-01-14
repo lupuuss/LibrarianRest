@@ -8,12 +8,15 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Stateless
 @Named
@@ -55,6 +58,16 @@ public class UsersController {
     @Path("/user/{login}")
     public Response updateUser(@PathParam("login") String login, @Valid NewUserDto newUser) {
 
+        if (newUser.getLogin() != null && !newUser.getLogin().equals(login)) {
+
+            return Response
+                    .status(Response.Status.CONFLICT)
+                    .entity(new Message("Login cannot be changed!"))
+                    .build();
+        }
+
+        newUser.setLogin(login);
+
         if (service.updateUserByLogin(newUser)) {
             return Response
                     .ok()
@@ -84,7 +97,7 @@ public class UsersController {
 
     @PATCH
     @Path("/users/activate")
-    public Response activateUsers(List<String> usersToActivate) {
+    public Response activateUsers(@NotNull List<String> usersToActivate) {
 
         var i = service.updateUsersActive(usersToActivate, true);
 
@@ -93,7 +106,7 @@ public class UsersController {
 
     @PATCH
     @Path("/users/deactivate")
-    public Response deactivateUsers(List<String> usersToActivate) {
+    public Response deactivateUsers(@NotNull List<String> usersToActivate) {
         var i = service.updateUsersActive(usersToActivate, false);
 
         return Response.ok().entity(new Message("Updated objects: " + i)).build();
