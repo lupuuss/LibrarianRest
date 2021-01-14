@@ -4,6 +4,9 @@ public class NewUserDto extends UserDto {
 
     private String password;
 
+    public NewUserDto() {
+
+    }
 
     public NewUserDto(
             String login,
