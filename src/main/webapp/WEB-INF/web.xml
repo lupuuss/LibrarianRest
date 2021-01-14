@@ -32,7 +32,7 @@
         <web-resource-collection>
             <web-resource-name>Safe read-only</web-resource-name>
             <url-pattern>/copy/*</url-pattern>
-            <url-pattern>/user/self</url-pattern>
+            <url-pattern>/self</url-pattern>
             <url-pattern>/book/*</url-pattern>
             <url-pattern>/magazine/*</url-pattern>
             <url-pattern>/element/*</url-pattern>

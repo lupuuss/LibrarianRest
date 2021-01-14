@@ -1,4 +1,4 @@
-package pl.lodz.pas.librarianrest.security;
+package pl.lodz.pas.librarianrest.security.objects;
 
 import javax.security.enterprise.credential.Credential;
 import java.util.Set;

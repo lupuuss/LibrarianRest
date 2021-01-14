@@ -30,7 +30,7 @@ public class UsersController {
     SecurityContext context;
 
     @GET
-    @Path("/user/self")
+    @Path("/self")
     public Response getSelfUserInfo() {
 
         var principle = context.getUserPrincipal();

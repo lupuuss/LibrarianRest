@@ -3,6 +3,7 @@ package pl.lodz.pas.librarianrest.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
+import pl.lodz.pas.librarianrest.security.objects.JwtCredential;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

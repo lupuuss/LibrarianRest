@@ -1,19 +1,19 @@
 package pl.lodz.pas.librarianrest.controllers;
 
-import pl.lodz.pas.librarianrest.security.TokenRefresh;
+import pl.lodz.pas.librarianrest.security.AuthService;
+import pl.lodz.pas.librarianrest.security.objects.Credentials;
 import pl.lodz.pas.librarianrest.services.UsersService;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static javax.ws.rs.core.Response.Status.UNAUTHORIZED;
 
@@ -29,21 +29,20 @@ public class AuthController {
     private UsersService service;
 
     @Inject
-    private TokenRefresh tokenRefresh;
+    private AuthService authService;
 
     @Path("login")
-    @GET
-    public Response login() {
+    @POST
+    public Response login(@Valid Credentials credentials) {
 
-        var principal = context.getUserPrincipal();
+        var token = authService.login(credentials);
 
-        if (principal != null) {
+        if (token == null) return Response.status(UNAUTHORIZED).build();
 
-            var login = principal.getName();
-
-            return Response.ok(service.getUserByLogin(login)).build();
-        }
-        return Response.status(UNAUTHORIZED).build();
+        return Response
+                .ok(service.getUserByLogin(credentials.getLogin()))
+                .header("Authorization", "Bearer " + token)
+                .build();
     }
 
     @Path("token")
@@ -54,7 +53,7 @@ public class AuthController {
 
         var login = context.getUserPrincipal().getName();
 
-        var newToken = tokenRefresh.refreshToken(login);
+        var newToken = authService.refreshToken(login);
 
         if (newToken == null) return Response.status(UNAUTHORIZED).build();
 
