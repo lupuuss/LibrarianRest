@@ -42,7 +42,7 @@ public interface EventsRepository {
 
     Optional<ElementLock> getCopyLock(UUID uuid);
 
-    void deleteLendingEventByUuid(UUID uuid);
+    boolean deleteLendingEventByUuid(UUID uuid);
 
     Optional<LendingEvent> findLendingEventByUuid(UUID uuid);
 }

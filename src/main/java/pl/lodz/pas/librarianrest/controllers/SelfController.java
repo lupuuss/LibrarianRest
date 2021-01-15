@@ -4,19 +4,13 @@ import pl.lodz.pas.librarianrest.controllers.objects.BookCopyRequest;
 import pl.lodz.pas.librarianrest.controllers.objects.MagazineCopyRequest;
 import pl.lodz.pas.librarianrest.services.LendingsService;
 import pl.lodz.pas.librarianrest.services.UsersService;
-import pl.lodz.pas.librarianrest.services.dto.ElementLockDto;
-import pl.lodz.pas.librarianrest.services.exceptions.ObjectNoLongerAvailableException;
-import pl.lodz.pas.librarianrest.services.exceptions.ObjectNotFoundException;
 import pl.lodz.pas.librarianrest.services.exceptions.ServiceException;
-import pl.lodz.pas.librarianrest.services.exceptions.UserInactiveException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -72,9 +66,9 @@ public class SelfController {
         if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
 
 
-        lendingsService.lendCopiesByIds(principle.getName(), ids);
+        var lendings = lendingsService.lendCopiesByIds(principle.getName(), ids);
 
-        return Response.ok().build();
+        return Response.ok(lendings).build();
     }
 
     @POST
@@ -109,5 +103,28 @@ public class SelfController {
         );
 
         return Response.ok(lock).build();
+    }
+
+    @DELETE
+    @Path("lock/book/{id}")
+    public Response unlockBook(@PathParam("id") String id) {
+        return unlockElement(id);
+    }
+
+    @DELETE
+    @Path("lock/magazine/{id}")
+    public Response unlockMagazine(@PathParam("id") String id) {
+        return unlockElement(id);
+    }
+
+    private Response unlockElement(String id) {
+
+        var principle = context.getUserPrincipal();
+
+        if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
+
+        lendingsService.unlockCopy(principle.getName(), id);
+
+        return Response.ok().build();
     }
 }

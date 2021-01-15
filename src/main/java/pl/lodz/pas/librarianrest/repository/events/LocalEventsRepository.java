@@ -235,9 +235,9 @@ public class LocalEventsRepository implements EventsRepository {
     }
 
     @Override
-    public void deleteLendingEventByUuid(UUID uuid) {
+    public boolean deleteLendingEventByUuid(UUID uuid) {
 
-        events.removeIf(event -> event instanceof LendingEvent && event.getUuid().equals(uuid));
+        return events.removeIf(event -> event instanceof LendingEvent && event.getUuid().equals(uuid));
     }
 
     @Override

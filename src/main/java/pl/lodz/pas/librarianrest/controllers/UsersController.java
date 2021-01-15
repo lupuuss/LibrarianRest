@@ -1,5 +1,6 @@
 package pl.lodz.pas.librarianrest.controllers;
 
+import pl.lodz.pas.librarianrest.controllers.objects.MultipleOperationsResult;
 import pl.lodz.pas.librarianrest.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.UsersService;
 import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
@@ -87,7 +88,7 @@ public class UsersController {
 
         var i = service.updateUsersActive(usersToActivate, true);
 
-        return Response.ok().entity(new Message("Updated objects: " + i)).build();
+        return Response.ok().entity(new MultipleOperationsResult(i)).build();
     }
 
     @PATCH
@@ -95,6 +96,6 @@ public class UsersController {
     public Response deactivateUsers(@NotNull List<String> usersToActivate) {
         var i = service.updateUsersActive(usersToActivate, false);
 
-        return Response.ok().entity(new Message("Updated objects: " + i)).build();
+        return Response.ok().entity(new MultipleOperationsResult(i)).build();
     }
 }

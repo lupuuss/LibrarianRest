@@ -20,7 +20,6 @@ import javax.inject.Inject;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RequestScoped
 public class LendingsService {
@@ -55,37 +54,6 @@ public class LendingsService {
     public List<LendEventDto> getAllLendings() {
 
         var events = eventsRepository.findAllLendingEvents();
-
-        return completeEventsDto(events);
-    }
-
-    public List<LendEventDto> getFilteredLendings(String loginQuery, String elementRefQuery) {
-
-        List<LendingEvent> events;
-
-        if ((loginQuery != null && !loginQuery.isBlank())) {
-            events = eventsRepository.findLendingEventsByUserLoginContains(loginQuery);
-        } else {
-            events = eventsRepository.findAllLendingEvents();
-        }
-
-        if ((elementRefQuery == null || elementRefQuery.isBlank())) {
-            return completeEventsDto(events);
-        }
-
-        var bookCopies = booksRepository.findBookCopiesByIsbnContains(elementRefQuery)
-                .stream()
-                .map(ElementCopy::getUuid);
-
-        var magazinesCopies = magazinesRepository.findMagazineCopiesByIssnContains(elementRefQuery)
-                .stream().map(ElementCopy::getUuid);
-
-        var allUuids = Stream.concat(bookCopies, magazinesCopies)
-                .collect(Collectors.toList());
-
-        events = events.stream()
-                .filter(event -> allUuids.contains(event.getElementUuid()))
-                .collect(Collectors.toList());
 
         return completeEventsDto(events);
     }
@@ -256,43 +224,27 @@ public class LendingsService {
         eventsRepository.deleteElementLock(uuid, user);
     }
 
-    public void removeNotReturnedLendings(List<String> ids) {
+    public int removeNotReturnedLendings(List<String> ids) {
 
-       for (var id : ids) {
-           eventsRepository.deleteLendingEventByUuid(UUID.fromString(id));
-       }
-    }
+        var i = 0;
 
-    private Optional<ElementCopy<?>> getElementCopyByDto(ElementCopyDto copy) {
+        for (var id : ids) {
 
-        if (copy == null) {
-            return Optional.empty();
+            var removed = eventsRepository.deleteLendingEventByUuid(UUID.fromString(id));
+
+            if (removed) i++;
         }
 
-        if (copy.getElement() instanceof BookDto) {
-            return booksRepository.findBookCopyByIsbnAndNumber(
-                    ((BookDto) copy.getElement()).getIsbn(),
-                    copy.getNumber()
-            ).map(c -> c);
-        } else if (copy.getElement() instanceof MagazineDto) {
-
-            return magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(
-                    ((MagazineDto) copy.getElement()).getIssn(),
-                    ((MagazineDto) copy.getElement()).getIssue(),
-                    copy.getNumber()
-            ).map(c -> c);
-
-        } else {
-            throw new IllegalStateException("Unsupported element type!");
-        }
+        return i;
     }
 
-    public void returnLendings(List<String> ids) {
+    public int returnLendings(List<String> ids) {
 
         var uuids = ids
                 .stream()
                 .map(UUID::fromString)
                 .collect(Collectors.toList());
+        int i = 0;
 
         for (var uuid : uuids) {
 
@@ -312,13 +264,17 @@ public class LendingsService {
                         lendingEvent.getElementUuid()
                 );
 
+                i++;
+
             } catch (RepositoryException e) {
                 e.printStackTrace();
             }
         }
+
+        return i;
     }
 
-    public void lendCopiesByIds(String userLogin, List<String> ids) throws ServiceException {
+    public List<LendEventDto> lendCopiesByIds(String userLogin, List<String> ids) throws ServiceException {
 
 
         var user = usersRepository.findUserByLogin(userLogin);
@@ -333,10 +289,11 @@ public class LendingsService {
                 .allMatch(lock -> lock.map(l -> l.getUntil().isAfter(dateProvider.now())).orElse(false));
 
 
-        if (elementsAvailable) {
+        if (!elementsAvailable) {
             throw new ObjectNoLongerAvailableException("One of the locks expired!", null);
         }
 
+        var events = new ArrayList<LendingEvent>();
         for (var id : ids) {
 
             UUID uuid = UUID.fromString(id);
@@ -344,10 +301,15 @@ public class LendingsService {
             eventsRepository.deleteElementLock(uuid, userLogin);
 
             try {
-                eventsRepository.addEvent(new LendingEvent(dateProvider.now(), userLogin, uuid));
+                var event = new LendingEvent(dateProvider.now(), userLogin, uuid);
+                eventsRepository.addEvent(event);
+
+                events.add(event);
             } catch (RepositoryException e) {
                 e.printStackTrace();
             }
         }
+
+        return completeEventsDto(events);
     }
 }
