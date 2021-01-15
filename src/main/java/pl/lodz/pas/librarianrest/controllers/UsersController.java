@@ -37,8 +37,14 @@ public class UsersController {
 
     @GET
     @Path("/user/{login}")
-    public Optional<UserDto> getUser(@PathParam("login") String login) {
-        return service.getUserByLogin(login);
+    public Response getUser(@PathParam("login") String login) {
+        var user = service.getUserByLogin(login);
+
+        if (user.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(user.get()).build();
     }
 
     @PUT
@@ -77,7 +83,7 @@ public class UsersController {
         }
 
         return Response
-                .status(Response.Status.BAD_REQUEST)
+                .status(Response.Status.CONFLICT)
                 .entity(new Message("User couldn't be added! Probably already exists."))
                 .build();
     }
@@ -86,6 +92,8 @@ public class UsersController {
     @Path("/users/activate")
     public Response activateUsers(@NotNull List<String> usersToActivate) {
 
+        if (usersToActivate.contains(null)) return Response.status(Response.Status.BAD_REQUEST).build();
+
         var i = service.updateUsersActive(usersToActivate, true);
 
         return Response.ok().entity(new MultipleOperationsResult(i)).build();
@@ -93,8 +101,11 @@ public class UsersController {
 
     @PATCH
     @Path("/users/deactivate")
-    public Response deactivateUsers(@NotNull List<String> usersToActivate) {
-        var i = service.updateUsersActive(usersToActivate, false);
+    public Response deactivateUsers(@NotNull List<String> usersToDeactivate) {
+
+        if (usersToDeactivate.contains(null)) return Response.status(Response.Status.BAD_REQUEST).build();
+
+        var i = service.updateUsersActive(usersToDeactivate, false);
 
         return Response.ok().entity(new MultipleOperationsResult(i)).build();
     }
