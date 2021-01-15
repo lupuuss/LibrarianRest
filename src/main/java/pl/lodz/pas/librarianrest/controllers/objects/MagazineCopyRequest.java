@@ -2,9 +2,17 @@ package pl.lodz.pas.librarianrest.controllers.objects;
 
 import pl.lodz.pas.librarianrest.services.dto.ElementCopyDto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class MagazineCopyRequest {
+
+    @NotBlank
     private String issn;
+
     private int issue;
+
+    @NotNull
     private ElementCopyDto.State state;
 
     public String getIssn() {

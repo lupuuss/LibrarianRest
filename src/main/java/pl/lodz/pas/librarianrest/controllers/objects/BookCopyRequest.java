@@ -2,9 +2,16 @@ package pl.lodz.pas.librarianrest.controllers.objects;
 
 import pl.lodz.pas.librarianrest.services.dto.ElementCopyDto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class BookCopyRequest {
-    String isbn;
-    ElementCopyDto.State state;
+
+    @NotBlank
+    private String isbn;
+
+    @NotNull
+    private ElementCopyDto.State state;
 
     public String getIsbn() {
         return isbn;

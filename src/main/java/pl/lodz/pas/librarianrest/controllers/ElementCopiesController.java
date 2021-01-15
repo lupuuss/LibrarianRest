@@ -10,6 +10,7 @@ import pl.lodz.pas.librarianrest.services.pages.Page;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class ElementCopiesController {
 
     @POST
     @Path("book")
-    public Response addBookCopy(BookCopyRequest bookRequest) {
+    public Response addBookCopy(@Valid BookCopyRequest bookRequest) {
 
         if (service.addBookCopy(bookRequest.getIsbn(), bookRequest.getState())) {
             return Response.ok().build();
@@ -54,7 +55,7 @@ public class ElementCopiesController {
 
     @POST
     @Path("magazine")
-    public Response addMagazineCopy(MagazineCopyRequest magazineRequest) {
+    public Response addMagazineCopy(@Valid MagazineCopyRequest magazineRequest) {
 
         if (service.addMagazineCopy(magazineRequest.getIssn(), magazineRequest.getIssue(), magazineRequest.getState())) {
             return Response.ok().build();
@@ -80,7 +81,7 @@ public class ElementCopiesController {
     }
 
     @DELETE
-    @Path("{isbn}/{issue}/{number}")
+    @Path("{issn}/{issue}/{number}")
     public Response deleteMagazine(
             @PathParam("issn") String issn,
             @PathParam("issue") int issue,
@@ -110,7 +111,7 @@ public class ElementCopiesController {
     }
 
     @PATCH
-    @Path("degrade/{isbn}/{issue}/{number}")
+    @Path("degrade/{issn}/{issue}/{number}")
     public Response patchMagazine(
             @PathParam("issn") String issn,
             @PathParam("issue") int issue,

@@ -81,15 +81,40 @@ public class ElementsController {
     }
 
     @PUT
-    @Path("/magazine")
-    public Response updateMagazine(@Valid MagazineDto magazineDto) {
+    @Path("/magazine/{issn}/{issue}")
+    public Response updateMagazine(
+            @PathParam("issn") String issn,
+            @PathParam("issue") Integer issue,
+            @Valid MagazineDto magazineDto
+    ) {
+
+        if (!magazineDto.getIssn().equals(issn)) {
+            return Response
+                    .status(Response.Status.CONFLICT)
+                    .build();
+        }
+
+        if (magazineDto.getIssue() != issue) {
+            return Response
+                    .status(Response.Status.CONFLICT)
+                    .build();
+        }
+
 
         return updateElement(magazineDto);
     }
 
     @PUT
-    @Path("/book")
-    public Response updateBook(@Valid BookDto bookDto) {
+    @Path("/book/{isbn}")
+    public Response updateBook(@PathParam("isbn") String isbn, @Valid BookDto bookDto) {
+
+        if (!bookDto.getIsbn().equals(isbn)) {
+            return Response
+                    .status(Response.Status.CONFLICT)
+                    .build();
+        }
+
+        bookDto.setIsbn(isbn);
 
         return updateElement(bookDto);
     }
