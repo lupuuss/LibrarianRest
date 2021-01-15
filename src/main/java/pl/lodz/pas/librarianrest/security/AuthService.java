@@ -24,9 +24,6 @@ public class AuthService {
     private UsersRepository repository;
 
     @Inject
-    private DtoMapper mapper;
-
-    @Inject
     private TokenProvider tokenProvider;
 
     public String refreshToken(String login) {

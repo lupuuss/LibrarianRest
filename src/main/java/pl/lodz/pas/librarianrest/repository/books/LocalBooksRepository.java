@@ -261,12 +261,4 @@ public class LocalBooksRepository implements BooksRepository {
         return (int) streamBookCopiesByIsbnContains(query).count();
     }
 
-    @Override
-    public synchronized void deleteBook(Book book) throws ObjectNotFoundException {
-        if (!books.contains(book)) {
-            throw new ObjectNotFoundException(Book.class.getSimpleName(), book.getIsbn());
-        }
-
-        books.remove(book);
-    }
 }

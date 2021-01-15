@@ -203,53 +203,6 @@ public class ElementsService {
         }
     }
 
-    public void degradeCopies(List<ElementCopyDto> copies) {
-
-        for (var copy : copies) {
-
-            if (copy.getElement() instanceof BookDto) {
-
-                var book = (BookDto) copy.getElement();
-
-                degradeBookCopy(book.getIsbn(), copy.getNumber());
-
-            } else if(copy.getElement() instanceof MagazineDto) {
-
-                var magazine = (MagazineDto) copy.getElement();
-
-                degradeMagazineCopy(magazine.getIssn(), magazine.getIssue(), copy.getNumber());
-
-            } else {
-                throw new IllegalStateException("Unsupported element type!");
-            }
-        }
-
-    }
-
-    public void deleteCopies(List<ElementCopyDto> copies) {
-
-        for (var copy : copies) {
-
-            if (copy.getElement() instanceof BookDto) {
-
-                var book = (BookDto) copy.getElement();
-
-                deleteBookCopy(book.getIsbn(), copy.getNumber());
-
-            } else if(copy.getElement() instanceof MagazineDto) {
-
-                var magazine = (MagazineDto) copy.getElement();
-
-                deleteMagazineCopy(magazine.getIssn(), magazine.getIssue(), copy.getNumber());
-
-            } else {
-                throw new IllegalStateException("Unsupported element type!");
-            }
-        }
-
-
-    }
-
     public boolean deleteBookCopy(String isbn, int number) {
 
         var toRemove = booksRepository.findBookCopyByIsbnAndNumber(
@@ -329,43 +282,6 @@ public class ElementsService {
 
         return booksRepository.findBookByIsbn(isbn)
                 .map(book -> mapper.map(book));
-    }
-
-    public List<ElementCopyDto.State> getAvailableStatesForBook(String isbn) {
-
-        var states = Arrays.stream(BookCopy.State.values())
-                .filter(state -> state.getLevel() > BookCopy.State.NEED_REPLACEMENT.getLevel())
-                .collect(Collectors.toList());
-
-        var availableStates = new ArrayList<ElementCopyDto.State>();
-
-        for (var state : states) {
-
-            var copies = booksRepository.findBookCopiesByIsbnAndState(isbn, state);
-
-            if (copies.stream().anyMatch(copy -> eventsRepository.isElementAvailable(copy.getUuid()))) {
-                availableStates.add(StateUtils.mapState(state));
-            }
-        }
-
-        return availableStates;
-    }
-
-    public List<ElementCopyDto.State> getAvailableStatesForMagazine(String issn, Integer issue){
-        var states = Arrays.stream(MagazineCopy.State.values())
-                .filter(state -> state.getLevel()>MagazineCopy.State.NEED_REPLACEMENT.getLevel())
-                .collect(Collectors.toList());
-
-        var availableStates = new ArrayList<ElementCopyDto.State>();
-
-        for (var state : states){
-            var copies = magazinesRepository.findMagazineCopiesByIssnAndIssueAndState(issn,issue,state);
-
-            if (copies.stream().anyMatch(copy -> eventsRepository.isElementAvailable(copy.getUuid()))){
-                availableStates.add(StateUtils.mapState(state));
-            }
-        }
-        return availableStates;
     }
 
     public Optional<MagazineDto> getMagazine(String ref, Integer issue) {
