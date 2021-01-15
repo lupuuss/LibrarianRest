@@ -2,6 +2,7 @@ package pl.lodz.pas.librarianrest.controllers;
 
 import pl.lodz.pas.librarianrest.controllers.objects.BookCopyRequest;
 import pl.lodz.pas.librarianrest.controllers.objects.MagazineCopyRequest;
+import pl.lodz.pas.librarianrest.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.ElementsService;
 import pl.lodz.pas.librarianrest.services.dto.ElementCopyDto;
 import pl.lodz.pas.librarianrest.services.dto.ElementDto;

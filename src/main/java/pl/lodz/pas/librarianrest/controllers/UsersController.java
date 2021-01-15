@@ -1,5 +1,6 @@
 package pl.lodz.pas.librarianrest.controllers;
 
+import pl.lodz.pas.librarianrest.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.UsersService;
 import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
@@ -15,8 +16,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Stateless
 @Named

@@ -1,5 +1,6 @@
 package pl.lodz.pas.librarianrest.controllers;
 
+import pl.lodz.pas.librarianrest.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.ElementsService;
 import pl.lodz.pas.librarianrest.services.dto.BookDto;
 import pl.lodz.pas.librarianrest.services.dto.ElementDto;
