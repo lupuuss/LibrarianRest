@@ -39,4 +39,10 @@ public interface EventsRepository {
     void addReturnEvent(UUID lendEventUuid, LocalDateTime now, String customerLogin, UUID elementUuid) throws InconsistencyFoundException;
 
     void clearDanglingReferencesFor(UUID uuid);
+
+    Optional<ElementLock> getCopyLock(UUID uuid);
+
+    void deleteLendingEventByUuid(UUID uuid);
+
+    Optional<LendingEvent> findLendingEventByUuid(UUID uuid);
 }

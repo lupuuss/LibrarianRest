@@ -4,12 +4,15 @@ import java.util.Date;
 
 public class LendEventDto {
 
+    private String id;
+
     private ElementCopyDto copy;
     private Date lendDate;
     private Date returnDate;
     private String login;
 
-    public LendEventDto(ElementCopyDto copy, Date lendDate, Date returnDate, String login) {
+    public LendEventDto(String id, ElementCopyDto copy, Date lendDate, Date returnDate, String login) {
+        this.id = id;
         this.copy = copy;
         this.lendDate = lendDate;
         this.returnDate = returnDate;
@@ -46,5 +49,13 @@ public class LendEventDto {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

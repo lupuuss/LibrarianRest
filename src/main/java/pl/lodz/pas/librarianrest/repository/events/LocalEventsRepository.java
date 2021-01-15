@@ -226,4 +226,26 @@ public class LocalEventsRepository implements EventsRepository {
                 .forEach(e -> e.setElementUuid(null));
 
     }
+
+    @Override
+    public Optional<ElementLock> getCopyLock(UUID uuid) {
+        return locks.stream()
+                .filter(lock -> lock.getElementUuid().equals(uuid))
+                .findFirst();
+    }
+
+    @Override
+    public void deleteLendingEventByUuid(UUID uuid) {
+
+        events.removeIf(event -> event instanceof LendingEvent && event.getUuid().equals(uuid));
+    }
+
+    @Override
+    public Optional<LendingEvent> findLendingEventByUuid(UUID uuid) {
+        return events
+                .stream()
+                .filter(event -> event instanceof LendingEvent && event.getUuid().equals(uuid))
+                .map(event -> (LendingEvent) event)
+                .findFirst();
+    }
 }

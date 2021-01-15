@@ -51,7 +51,12 @@ public class ElementsService {
 
             var copiesForBook = booksRepository.findBookCopiesByIsbn(book.getIsbn())
                     .stream()
-                    .map(copy -> new ElementCopyDto(copy.getNumber(), bookDto, StateUtils.mapState(copy.getState())))
+                    .map(copy -> new ElementCopyDto(
+                            copy.getUuid().toString(),
+                            copy.getNumber(),
+                            bookDto,
+                            StateUtils.mapState(copy.getState())
+                    ))
                     .collect(Collectors.toList());
 
             copies.addAll(copiesForBook);
@@ -63,7 +68,12 @@ public class ElementsService {
             var copiesForMagazine =
                     magazinesRepository.findMagazineCopiesByIssnAndIssue(magazine.getIssn(), magazine.getIssue())
                             .stream()
-                    .map(copy -> new ElementCopyDto(copy.getNumber(), magazineDto, StateUtils.mapState(copy.getState())))
+                    .map(copy -> new ElementCopyDto(
+                            copy.getUuid().toString(),
+                            copy.getNumber(),
+                            magazineDto,
+                            StateUtils.mapState(copy.getState())
+                    ))
                     .collect(Collectors.toList());
 
             copies.addAll(copiesForMagazine);
@@ -434,7 +444,7 @@ public class ElementsService {
 
             var bookDto = mapper.map(book);
 
-            copies.add(new ElementCopyDto(x.getNumber(), bookDto, StateUtils.mapState(x.getState())));
+            copies.add(new ElementCopyDto(x.getUuid().toString(), x.getNumber(), bookDto, StateUtils.mapState(x.getState())));
         }
 
         return copies;
@@ -448,7 +458,7 @@ public class ElementsService {
             var magazine = magazinesRepository.findMagazineByUuid(x.getElementUuid()).orElseThrow();
             var magazineDto = mapper.map(magazine);
 
-            copies.add(new ElementCopyDto(x.getNumber(), magazineDto, StateUtils.mapState(x.getState())));
+            copies.add(new ElementCopyDto(x.getUuid().toString(), x.getNumber(), magazineDto, StateUtils.mapState(x.getState())));
         }
 
         return copies;

@@ -13,11 +13,11 @@ import pl.lodz.pas.librarianrest.repository.exceptions.InconsistencyFoundExcepti
 import pl.lodz.pas.librarianrest.repository.exceptions.RepositoryException;
 import pl.lodz.pas.librarianrest.repository.user.UsersRepository;
 import pl.lodz.pas.librarianrest.services.dto.*;
+import pl.lodz.pas.librarianrest.services.exceptions.*;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import java.sql.Timestamp;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,53 +44,6 @@ public class LendingsService {
     private UsersRepository usersRepository;
 
     private final long reservationTimeInMinutes = 30;
-
-    public boolean lendLockedElements(Set<ElementLockDto> elementLocks, String userLogin) {
-
-        var user = usersRepository.findUserByLogin(userLogin);
-
-        if (user.isEmpty() || !user.get().isActive()) {
-            return false;
-        }
-
-        if (!elementLocks.stream().allMatch(lock -> lock.getUntil().isAfter(dateProvider.now()))) {
-            return false;
-        }
-
-        for (var lock : elementLocks) {
-
-            var elementCopy = lock.getCopy();
-
-            UUID uuid;
-
-            if (elementCopy.getElement() instanceof BookDto) {
-                BookDto book = (BookDto) elementCopy.getElement();
-
-                uuid = booksRepository.findBookCopyByIsbnAndNumber(book.getIsbn(), elementCopy.getNumber())
-                        .orElseThrow()
-                        .getUuid();
-
-            } else if (elementCopy.getElement() instanceof MagazineDto) {
-                MagazineDto magazine = (MagazineDto) elementCopy.getElement();
-
-                uuid = magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(magazine.getIssn(), magazine.getIssue(), elementCopy.getNumber())
-                        .orElseThrow()
-                        .getUuid();
-            } else {
-                throw new IllegalStateException("Unsupported element type!");
-            }
-
-            eventsRepository.deleteElementLock(uuid, userLogin);
-
-            try {
-                eventsRepository.addEvent(new LendingEvent(dateProvider.now(), userLogin, uuid));
-            } catch (RepositoryException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return true;
-    }
 
     public List<LendEventDto> getLendingsForUser(String user) {
 
@@ -156,7 +109,13 @@ public class LendingsService {
                 returnDate = Timestamp.valueOf(returnEvent.orElseThrow().getDate());
             }
 
-            eventDtos.add(new LendEventDto(copy, lendDate, returnDate, event.getCustomerLogin()));
+            eventDtos.add(new LendEventDto(
+                    event.getUuid().toString(),
+                    copy,
+                    lendDate,
+                    returnDate,
+                    event.getCustomerLogin()
+            ));
         }
 
         return eventDtos;
@@ -168,11 +127,11 @@ public class LendingsService {
 
         if (bookCopy.isPresent()) {
 
-            var book =
-                    booksRepository.findBookByUuid(bookCopy.get().getElementUuid())
-                            .orElseThrow();
+            var book = booksRepository.findBookByUuid(bookCopy.get().getElementUuid())
+                    .orElseThrow();
 
             return new ElementCopyDto(
+                    bookCopy.get().getUuid().toString(),
                     bookCopy.get().getNumber(),
                     mapper.map(book),
                     StateUtils.mapState(bookCopy.get().getState())
@@ -186,6 +145,7 @@ public class LendingsService {
                     .orElseThrow();
 
             return new ElementCopyDto(
+                    magazineCopy.get().getUuid().toString(),
                     magazineCopy.get().getNumber(),
                     mapper.map(magazine),
                     StateUtils.mapState(magazineCopy.get().getState())
@@ -196,14 +156,14 @@ public class LendingsService {
         return null;
     }
 
-    public Optional<ElementLockDto> lockBook(String isbn, String userLogin, ElementCopyDto.State state) {
+    public ElementLockDto lockBook(String isbn, String userLogin, ElementCopyDto.State state) throws ServiceException {
 
         List<BookCopy> copies = booksRepository.findBookCopiesByIsbnAndState(isbn, StateUtils.mapState(state));
 
         var user = usersRepository.findUserByLogin(userLogin);
 
         if (user.isEmpty() || !user.get().isActive()) {
-            return Optional.empty();
+            throw new UserInactiveException();
         }
 
         var optReservedBook = copies.stream()
@@ -211,57 +171,56 @@ public class LendingsService {
                 .findAny();
 
         if (optReservedBook.isEmpty()) {
-            return Optional.empty();
+            throw new ObjectNotFoundException("Element not found!", null);
         }
 
         var reservedCopy = optReservedBook.get();
 
         ElementLock lock = getLockForElementCopy(userLogin, reservedCopy);
 
-        if (lock == null) return Optional.empty();
+        if (lock == null) throw new ObjectNoLongerAvailableException("Element is no longer available!", null);
 
         var book = booksRepository.findBookByUuid(reservedCopy.getElementUuid()).orElseThrow();
         var bookDto = mapper.map(book);
 
         var result = new ElementCopyDto(
+                reservedCopy.getUuid().toString(),
                 reservedCopy.getNumber(),
                 bookDto,
                 StateUtils.mapState(reservedCopy.getState())
         );
 
-        return Optional.of(new ElementLockDto(result, lock.getUserLogin(), lock.getUntil()));
+        return new ElementLockDto(result, lock.getUserLogin(), lock.getUntil());
     }
 
-    public Optional<ElementLockDto> lockMagazine(String issn, int issue, String userLogin, ElementCopyDto.State state ) {
+    public Optional<ElementLockDto> lockMagazine(String issn, int issue, String userLogin, ElementCopyDto.State state) throws ServiceException {
 
         List<MagazineCopy> copies = magazinesRepository.findMagazineCopiesByIssnAndIssueAndState(issn, issue, StateUtils.mapState(state));
 
         var user = usersRepository.findUserByLogin(userLogin);
 
         if (user.isEmpty() || !user.get().isActive()) {
-            return Optional.empty();
+            throw new UserInactiveException();
         }
 
-        var optReservedMagazine = copies.stream()
+        var optReservedBook = copies.stream()
                 .filter(copy -> eventsRepository.isElementAvailable(copy.getUuid()))
                 .findAny();
 
-        if (optReservedMagazine.isEmpty()) {
-            return Optional.empty();
+        if (optReservedBook.isEmpty()) {
+            throw new ObjectNotFoundException("Element not found!", null);
         }
 
-        var reservedCopy = optReservedMagazine.get();
-
+        var reservedCopy = optReservedBook.get();
         ElementLock lock = getLockForElementCopy(userLogin, reservedCopy);
 
-        if (lock == null) {
-            return Optional.empty();
-        }
+        if (lock == null) throw new ObjectNoLongerAvailableException("Element is no longer available!", null);
 
         var magazine = magazinesRepository.findMagazineByUuid(reservedCopy.getElementUuid()).orElseThrow();
         var magazineDto = mapper.map(magazine);
 
         var result = new ElementCopyDto(
+                reservedCopy.getUuid().toString(),
                 reservedCopy.getNumber(),
                 magazineDto,
                 StateUtils.mapState(reservedCopy.getState())
@@ -290,63 +249,18 @@ public class LendingsService {
         }
     }
 
-    public void unlockElement(String user, ElementCopyDto elementCopyDto) {
+    public void unlockCopy(String user, String id) {
 
-        ElementCopy<?> element;
+        var uuid = UUID.fromString(id);
 
-        if (elementCopyDto.getElement() instanceof BookDto) {
-
-            var book = (BookDto) elementCopyDto.getElement();
-
-            element = booksRepository.findBookCopyByIsbnAndNumber(
-                    book.getIsbn(),
-                    elementCopyDto.getNumber()
-            ).orElseThrow();
-
-        } else if (elementCopyDto.getElement() instanceof MagazineDto) {
-
-            var magazine = (MagazineDto) elementCopyDto.getElement();
-
-            element = magazinesRepository.findMagazineCopyByIssnAndIssueAndNumber(
-                    magazine.getIssn(),
-                    magazine.getIssue(),
-                    elementCopyDto.getNumber()
-            ).orElseThrow();
-
-        } else {
-
-            throw new IllegalStateException("Unsupported element type!");
-
-        }
-
-        eventsRepository.deleteElementLock(element.getUuid(), user);
+        eventsRepository.deleteElementLock(uuid, user);
     }
 
-    public void removeNotReturnedLendings(List<LendEventDto> lendingEvents) {
+    public void removeNotReturnedLendings(List<String> ids) {
 
-        var events = lendingEvents.stream()
-                .filter(lend -> lend.getReturnDate() == null)
-                .collect(Collectors.toList());
-
-        for (var event : events){
-
-            var copy = getElementCopyByDto(event.getCopy());
-
-            var date = event.getLendDate()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime();
-
-            if (copy.isEmpty()) {
-
-                eventsRepository.deleteDanglingEventByDateAndUser(event.getLogin(), date);
-
-                continue;
-            }
-
-            eventsRepository.deleteLendingEventByElementCopyUuidDate(copy.get().getUuid(), date);
-        }
-
+       for (var id : ids) {
+           eventsRepository.deleteLendingEventByUuid(UUID.fromString(id));
+       }
     }
 
     private Optional<ElementCopy<?>> getElementCopyByDto(ElementCopyDto copy) {
@@ -373,38 +287,66 @@ public class LendingsService {
         }
     }
 
-    public void returnLendings(List<LendEventDto> eventsDtos) {
+    public void returnLendings(List<String> ids) {
 
-        for (var eventDto : eventsDtos) {
-            var copy = getElementCopyByDto(eventDto.getCopy());
+        var uuids = ids
+                .stream()
+                .map(UUID::fromString)
+                .collect(Collectors.toList());
 
-            if (copy.isEmpty()) {
+        for (var uuid : uuids) {
+
+            var lendingEventOpt = eventsRepository.findLendingEventByUuid(uuid);
+
+            if (lendingEventOpt.isEmpty()) {
                 continue;
             }
 
-            var lendingEventOpt = eventsRepository.findLendingEventByElementCopyUuidDate(
-                    copy.get().getUuid(),
-                    eventDto.getLendDate()
-                            .toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime()
-            );
+            var lendingEvent = lendingEventOpt.get();
 
-            if (lendingEventOpt.isPresent()) {
+            try {
+                eventsRepository.addReturnEvent(
+                        lendingEvent.getUuid(),
+                        dateProvider.now(),
+                        lendingEvent.getCustomerLogin(),
+                        lendingEvent.getElementUuid()
+                );
 
-                var lendingEvent = lendingEventOpt.get();
+            } catch (RepositoryException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-                try {
-                    eventsRepository.addReturnEvent(
-                            lendingEvent.getUuid(),
-                            dateProvider.now(),
-                            lendingEvent.getCustomerLogin(),
-                            lendingEvent.getElementUuid()
-                    );
+    public void lendCopiesByIds(String userLogin, List<String> ids) throws ServiceException {
 
-                } catch (RepositoryException e) {
-                    e.printStackTrace();
-                }
+
+        var user = usersRepository.findUserByLogin(userLogin);
+
+        if (user.isEmpty() || !user.get().isActive()) {
+            throw new UserInactiveException();
+        }
+
+        var elementsAvailable = ids
+                .stream()
+                .map(id -> eventsRepository.getCopyLock(UUID.fromString(id)))
+                .allMatch(lock -> lock.map(l -> l.getUntil().isAfter(dateProvider.now())).orElse(false));
+
+
+        if (elementsAvailable) {
+            throw new ObjectNoLongerAvailableException("One of the locks expired!", null);
+        }
+
+        for (var id : ids) {
+
+            UUID uuid = UUID.fromString(id);
+
+            eventsRepository.deleteElementLock(uuid, userLogin);
+
+            try {
+                eventsRepository.addEvent(new LendingEvent(dateProvider.now(), userLogin, uuid));
+            } catch (RepositoryException e) {
+                e.printStackTrace();
             }
         }
     }

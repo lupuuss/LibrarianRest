@@ -2,6 +2,8 @@ package pl.lodz.pas.librarianrest.services.dto;
 
 public class ElementCopyDto {
 
+    private final String id;
+
     private final  int number;
     private final  ElementDto element;
 
@@ -11,7 +13,8 @@ public class ElementCopyDto {
 
     private State state;
 
-    public ElementCopyDto(int number,ElementDto element,  State state) {
+    public ElementCopyDto(String id, int number,ElementDto element,  State state) {
+        this.id = id;
         this.element = element;
         this.number = number;
         this.state = state;
@@ -31,5 +34,9 @@ public class ElementCopyDto {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public String getId() {
+        return id;
     }
 }

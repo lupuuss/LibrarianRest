@@ -29,19 +29,6 @@ public class UsersController {
     SecurityContext context;
 
     @GET
-    @Path("/self")
-    public Response getSelfUserInfo() {
-
-        var principle = context.getUserPrincipal();
-
-        if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
-
-        var user = service.getUserByLogin(principle.getName());
-
-        return Response.ok(user).build();
-    }
-
-    @GET
     @Path("/user")
     public List<UserDto> getUsers(@QueryParam("query") String query) {
         return service.getUsersByLoginContains(query);
