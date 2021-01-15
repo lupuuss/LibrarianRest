@@ -1,4 +1,4 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
 import pl.lodz.pas.librarianrest.security.AuthService;
 import pl.lodz.pas.librarianrest.security.objects.Credentials;
@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,7 +34,7 @@ public class AuthController {
 
     @Path("login")
     @POST
-    public Response login(@Valid Credentials credentials) {
+    public Response login(@NotNull @Valid Credentials credentials) {
 
         var token = authService.login(credentials);
 

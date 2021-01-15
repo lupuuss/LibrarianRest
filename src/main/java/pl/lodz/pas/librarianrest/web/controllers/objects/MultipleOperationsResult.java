@@ -1,4 +1,4 @@
-package pl.lodz.pas.librarianrest.controllers.objects;
+package pl.lodz.pas.librarianrest.web.controllers.objects;
 
 public class MultipleOperationsResult {
     private int affectedItems;

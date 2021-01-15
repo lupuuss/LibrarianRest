@@ -1,7 +1,7 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
-import pl.lodz.pas.librarianrest.controllers.objects.BookCopyRequest;
-import pl.lodz.pas.librarianrest.controllers.objects.MagazineCopyRequest;
+import pl.lodz.pas.librarianrest.web.controllers.objects.BookCopyRequest;
+import pl.lodz.pas.librarianrest.web.controllers.objects.MagazineCopyRequest;
 import pl.lodz.pas.librarianrest.services.LendingsService;
 import pl.lodz.pas.librarianrest.services.UsersService;
 import pl.lodz.pas.librarianrest.services.exceptions.ServiceException;

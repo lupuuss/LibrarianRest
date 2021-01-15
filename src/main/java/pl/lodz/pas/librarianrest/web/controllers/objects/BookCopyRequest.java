@@ -1,34 +1,24 @@
-package pl.lodz.pas.librarianrest.controllers.objects;
+package pl.lodz.pas.librarianrest.web.controllers.objects;
 
 import pl.lodz.pas.librarianrest.services.dto.ElementCopyDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-public class MagazineCopyRequest {
+public class BookCopyRequest {
 
     @NotBlank
-    private String issn;
-
-    private int issue;
+    private String isbn;
 
     @NotNull
     private ElementCopyDto.State state;
 
-    public String getIssn() {
-        return issn;
+    public String getIsbn() {
+        return isbn;
     }
 
-    public void setIssn(String issn) {
-        this.issn = issn;
-    }
-
-    public int getIssue() {
-        return issue;
-    }
-
-    public void setIssue(int issue) {
-        this.issue = issue;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
     public ElementCopyDto.State getState() {

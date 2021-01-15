@@ -1,4 +1,4 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
 import javax.ejb.Stateless;
 import javax.inject.Named;

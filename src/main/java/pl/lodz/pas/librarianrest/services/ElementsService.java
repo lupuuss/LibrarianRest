@@ -38,50 +38,6 @@ public class ElementsService {
     @Inject
     private EventsRepository eventsRepository;
 
-    public List<ElementCopyDto> getAllCopies() {
-
-        var books = booksRepository.findAllBooks();
-        var magazines = magazinesRepository.findAllMagazines();
-
-        var copies = new ArrayList<ElementCopyDto>();
-
-        for (var book : books) {
-
-            var bookDto = mapper.map(book);
-
-            var copiesForBook = booksRepository.findBookCopiesByIsbn(book.getIsbn())
-                    .stream()
-                    .map(copy -> new ElementCopyDto(
-                            copy.getUuid().toString(),
-                            copy.getNumber(),
-                            bookDto,
-                            StateUtils.mapState(copy.getState())
-                    ))
-                    .collect(Collectors.toList());
-
-            copies.addAll(copiesForBook);
-        }
-
-        for (var magazine : magazines) {
-            var magazineDto = mapper.map(magazine);
-
-            var copiesForMagazine =
-                    magazinesRepository.findMagazineCopiesByIssnAndIssue(magazine.getIssn(), magazine.getIssue())
-                            .stream()
-                    .map(copy -> new ElementCopyDto(
-                            copy.getUuid().toString(),
-                            copy.getNumber(),
-                            magazineDto,
-                            StateUtils.mapState(copy.getState())
-                    ))
-                    .collect(Collectors.toList());
-
-            copies.addAll(copiesForMagazine);
-        }
-
-        return copies;
-    }
-
     public boolean addBookCopy(String isbn, ElementCopyDto.State state) {
         try {
 
@@ -131,13 +87,6 @@ public class ElementsService {
             return false;
         }
 
-    }
-
-    public List<String> getAllIsbns() {
-        return booksRepository.findAllBooks()
-                .stream()
-                .map(Book::getIsbn)
-                .collect(Collectors.toList());
     }
 
     public List<MagazineDto> getAllMagazines() {
@@ -333,23 +282,6 @@ public class ElementsService {
 
     }
 
-    public List<ElementCopyDto> getCopiesByIssnIsbnContains(String query) {
-
-        if(query == null || query.isBlank()){
-            return getAllCopies();
-        }
-
-        var booksByIsbn =  booksRepository.findBookCopiesByIsbnContains(query);
-
-        List<ElementCopyDto> copies = new ArrayList<>(booksToCopies(booksByIsbn));
-
-        var magazinesByIssn = magazinesRepository.findMagazineCopiesByIssnContains(query);
-
-        copies.addAll(magazinesToCopies(magazinesByIssn));
-
-        return copies;
-    }
-
     private List<ElementCopyDto> booksToCopies(List<BookCopy> bookCopies) {
 
         var copies = new ArrayList<ElementCopyDto>();
@@ -378,13 +310,6 @@ public class ElementsService {
         }
 
         return copies;
-    }
-
-    public int getCopiesPagesCountByIssnIsbn(String query, int pageSize) {
-        int size = booksRepository.countBookCopiesByIsbnContains(query) +
-                   magazinesRepository.countMagazineCopiesByIssnContains(query);
-
-        return size / pageSize + ((size % pageSize == 0) ? 0 : 1);
     }
 
     public Page<ElementCopyDto> getCopiesPageByIssnIsbnContains(String query, int pageSize, int pageNumber) {

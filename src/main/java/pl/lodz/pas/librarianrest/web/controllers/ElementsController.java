@@ -1,6 +1,6 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
-import pl.lodz.pas.librarianrest.controllers.objects.Message;
+import pl.lodz.pas.librarianrest.web.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.ElementsService;
 import pl.lodz.pas.librarianrest.services.dto.BookDto;
 import pl.lodz.pas.librarianrest.services.dto.ElementDto;
@@ -10,6 +10,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -56,14 +57,14 @@ public class ElementsController {
 
     @POST
     @Path("/book")
-    public Response addBook(@Valid BookDto bookDto) {
+    public Response addBook(@NotNull @Valid BookDto bookDto) {
 
         return addElement(bookDto);
     }
 
     @POST
     @Path("/magazine")
-    public Response addMagazine(@Valid MagazineDto magazineDto) {
+    public Response addMagazine(@NotNull @Valid MagazineDto magazineDto) {
 
         return addElement(magazineDto);
     }
@@ -86,7 +87,7 @@ public class ElementsController {
     public Response updateMagazine(
             @PathParam("issn") String issn,
             @PathParam("issue") Integer issue,
-            @Valid MagazineDto magazineDto
+            @NotNull@Valid MagazineDto magazineDto
     ) {
 
         if (!magazineDto.getIssn().equals(issn)) {
@@ -107,7 +108,7 @@ public class ElementsController {
 
     @PUT
     @Path("/book/{isbn}")
-    public Response updateBook(@PathParam("isbn") String isbn, @Valid BookDto bookDto) {
+    public Response updateBook(@PathParam("isbn") String isbn, @NotNull @Valid BookDto bookDto) {
 
         if (!bookDto.getIsbn().equals(isbn)) {
             return Response

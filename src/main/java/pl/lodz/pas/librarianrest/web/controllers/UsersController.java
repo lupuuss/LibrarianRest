@@ -1,7 +1,7 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
-import pl.lodz.pas.librarianrest.controllers.objects.MultipleOperationsResult;
-import pl.lodz.pas.librarianrest.controllers.objects.Message;
+import pl.lodz.pas.librarianrest.web.controllers.objects.MultipleOperationsResult;
+import pl.lodz.pas.librarianrest.web.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.UsersService;
 import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
@@ -16,7 +16,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
-import java.util.Optional;
 
 @Stateless
 @Named

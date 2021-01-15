@@ -1,8 +1,8 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
-import pl.lodz.pas.librarianrest.controllers.objects.BookCopyRequest;
-import pl.lodz.pas.librarianrest.controllers.objects.MagazineCopyRequest;
-import pl.lodz.pas.librarianrest.controllers.objects.Message;
+import pl.lodz.pas.librarianrest.web.controllers.objects.BookCopyRequest;
+import pl.lodz.pas.librarianrest.web.controllers.objects.MagazineCopyRequest;
+import pl.lodz.pas.librarianrest.web.controllers.objects.Message;
 import pl.lodz.pas.librarianrest.services.ElementsService;
 import pl.lodz.pas.librarianrest.services.dto.ElementCopyDto;
 import pl.lodz.pas.librarianrest.services.dto.ElementDto;
@@ -12,6 +12,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Map;
@@ -42,7 +43,7 @@ public class ElementCopiesController {
 
     @POST
     @Path("book")
-    public Response addBookCopy(@Valid BookCopyRequest bookRequest) {
+    public Response addBookCopy(@NotNull @Valid BookCopyRequest bookRequest) {
 
         if (service.addBookCopy(bookRequest.getIsbn(), bookRequest.getState())) {
             return Response.ok().build();
@@ -56,7 +57,7 @@ public class ElementCopiesController {
 
     @POST
     @Path("magazine")
-    public Response addMagazineCopy(@Valid MagazineCopyRequest magazineRequest) {
+    public Response addMagazineCopy(@NotNull@Valid MagazineCopyRequest magazineRequest) {
 
         if (service.addMagazineCopy(magazineRequest.getIssn(), magazineRequest.getIssue(), magazineRequest.getState())) {
             return Response.ok().build();

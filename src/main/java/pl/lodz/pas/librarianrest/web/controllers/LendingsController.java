@@ -1,6 +1,6 @@
-package pl.lodz.pas.librarianrest.controllers;
+package pl.lodz.pas.librarianrest.web.controllers;
 
-import pl.lodz.pas.librarianrest.controllers.objects.MultipleOperationsResult;
+import pl.lodz.pas.librarianrest.web.controllers.objects.MultipleOperationsResult;
 import pl.lodz.pas.librarianrest.services.LendingsService;
 import pl.lodz.pas.librarianrest.services.dto.LendEventDto;
 
@@ -8,6 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.Collections;
