@@ -48,7 +48,7 @@ public class UsersController {
 
     @PUT
     @Path("/user/{login}")
-    public Response updateUser(@PathParam("login") String login, @Valid NewUserDto newUser) {
+    public Response updateUser(@PathParam("login") String login, @NotNull @Valid NewUserDto newUser) {
 
         if (newUser.getLogin() != null && !newUser.getLogin().equals(login)) {
 
@@ -73,7 +73,7 @@ public class UsersController {
 
     @POST
     @Path("/user")
-    public Response addUser(@Valid NewUserDto newUser) {
+    public Response addUser(@NotNull @Valid NewUserDto newUser) {
 
         if (service.addUser(newUser)) {
             return Response

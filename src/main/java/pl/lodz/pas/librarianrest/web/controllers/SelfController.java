@@ -1,5 +1,6 @@
 package pl.lodz.pas.librarianrest.web.controllers;
 
+import pl.lodz.pas.librarianrest.Utils;
 import pl.lodz.pas.librarianrest.web.controllers.objects.BookCopyRequest;
 import pl.lodz.pas.librarianrest.web.controllers.objects.MagazineCopyRequest;
 import pl.lodz.pas.librarianrest.services.LendingsService;
@@ -10,6 +11,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -59,12 +61,15 @@ public class SelfController {
 
     @POST
     @Path("lending")
-    public Response lendElements(List<String> ids) throws ServiceException {
+    public Response lendElements(@NotNull List<String> ids) throws ServiceException {
 
         var principle = context.getUserPrincipal();
 
         if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
 
+        if (ids.contains(null) || !ids.stream().allMatch(Utils::isValidUuid)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
 
         var lendings = lendingsService.lendCopiesByIds(principle.getName(), ids);
 
@@ -73,7 +78,7 @@ public class SelfController {
 
     @POST
     @Path("lock/book")
-    public Response lockBook(@Valid BookCopyRequest request) throws ServiceException {
+    public Response lockBook(@NotNull @Valid BookCopyRequest request) throws ServiceException {
 
         var principle = context.getUserPrincipal();
 
@@ -89,7 +94,7 @@ public class SelfController {
 
     @POST
     @Path("lock/magazine")
-    public Response lockMagazine(@Valid MagazineCopyRequest request) throws ServiceException {
+    public Response lockMagazine(@NotNull @Valid MagazineCopyRequest request) throws ServiceException {
 
         var principle = context.getUserPrincipal();
 
@@ -108,6 +113,7 @@ public class SelfController {
     @DELETE
     @Path("lock/book/{id}")
     public Response unlockBook(@PathParam("id") String id) {
+
         return unlockElement(id);
     }
 
@@ -120,6 +126,10 @@ public class SelfController {
     private Response unlockElement(String id) {
 
         var principle = context.getUserPrincipal();
+
+        if (!Utils.isValidUuid(id)) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
 
         if (principle == null) return Response.status(Response.Status.UNAUTHORIZED).build();
 
