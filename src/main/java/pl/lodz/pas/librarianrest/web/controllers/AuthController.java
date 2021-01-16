@@ -3,6 +3,7 @@ package pl.lodz.pas.librarianrest.web.controllers;
 import pl.lodz.pas.librarianrest.security.AuthService;
 import pl.lodz.pas.librarianrest.security.objects.Credentials;
 import pl.lodz.pas.librarianrest.services.UsersService;
+import pl.lodz.pas.librarianrest.web.controllers.objects.Token;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -27,9 +28,6 @@ public class AuthController {
     private SecurityContext context;
 
     @Inject
-    private UsersService service;
-
-    @Inject
     private AuthService authService;
 
     @Path("login")
@@ -41,8 +39,7 @@ public class AuthController {
         if (token == null) return Response.status(UNAUTHORIZED).build();
 
         return Response
-                .ok(service.getUserByLogin(credentials.getLogin()))
-                .header("Authorization", "Bearer " + token)
+                .ok(new Token(token))
                 .build();
     }
 
@@ -58,6 +55,8 @@ public class AuthController {
 
         if (newToken == null) return Response.status(UNAUTHORIZED).build();
 
-        return Response.ok().header("Authorization", "Bearer " + newToken).build();
+        return Response
+                .ok(new Token(newToken))
+                .build();
     }
 }
