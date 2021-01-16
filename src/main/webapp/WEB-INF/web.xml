@@ -72,6 +72,15 @@
 
     <security-constraint>
         <web-resource-collection>
+            <web-resource-name>self/user</web-resource-name>
+            <url-pattern>/self/user</url-pattern>
+            <http-method-omission>GET</http-method-omission>
+        </web-resource-collection>
+        <auth-constraint />
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
             <web-resource-name>User resources</web-resource-name>
             <url-pattern>/self/*</url-pattern>
         </web-resource-collection>
