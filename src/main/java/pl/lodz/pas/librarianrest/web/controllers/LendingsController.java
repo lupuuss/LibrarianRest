@@ -16,21 +16,20 @@ import java.util.List;
 
 @Named
 @Stateless
-@Path("")
+@Path("lending")
 public class LendingsController {
 
     @Inject
     private LendingsService service;
 
     @GET
-    @Path("lending")
     public List<LendEventDto> getAllLending() {
 
         return service.getAllLendings();
     }
 
     @POST
-    @Path("lending/return")
+    @Path("return")
     public Response returnLendings(@NotNull List<String> ids) {
 
         if (ids.contains(null) || !ids.stream().allMatch(Utils::isValidUuid)) {
@@ -44,7 +43,7 @@ public class LendingsController {
     }
 
     @DELETE
-    @Path("lending/{id}")
+    @Path("{id}")
     public Response deleteNotReturnedLendings(@NotNull @PathParam("id") String id) {
 
         if (!Utils.isValidUuid(id)) {

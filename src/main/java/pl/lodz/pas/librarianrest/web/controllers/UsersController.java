@@ -26,7 +26,7 @@ public class UsersController {
     private UsersService service;
 
     @Context
-    SecurityContext context;
+    private SecurityContext context;
 
     @GET
     @Path("/user")

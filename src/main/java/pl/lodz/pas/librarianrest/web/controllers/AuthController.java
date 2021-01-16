@@ -2,7 +2,6 @@ package pl.lodz.pas.librarianrest.web.controllers;
 
 import pl.lodz.pas.librarianrest.security.AuthService;
 import pl.lodz.pas.librarianrest.security.objects.Credentials;
-import pl.lodz.pas.librarianrest.services.UsersService;
 import pl.lodz.pas.librarianrest.web.controllers.objects.Token;
 
 import javax.ejb.Stateless;
