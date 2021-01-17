@@ -50,10 +50,10 @@ public class DtoMapper {
         );
     }
 
-    public User map(UserDto user) {
+    public User map(UserDto user, String password) {
         return new User(
                 user.getLogin(),
-                null,
+                password,
                 user.getFirstName(),
                 user.getLastName(),
                 user.getEmail(),

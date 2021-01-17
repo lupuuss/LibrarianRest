@@ -48,7 +48,7 @@ public class UsersController {
 
     @PUT
     @Path("/user/{login}")
-    public Response updateUser(@PathParam("login") String login, @NotNull @Valid NewUserDto newUser) {
+    public Response updateUser(@PathParam("login") String login, @NotNull @Valid UserDto newUser) {
 
         if (newUser.getLogin() != null && !newUser.getLogin().equals(login)) {
 

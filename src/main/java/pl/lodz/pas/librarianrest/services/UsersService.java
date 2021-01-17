@@ -2,6 +2,7 @@ package pl.lodz.pas.librarianrest.services;
 
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectAlreadyExistsException;
 import pl.lodz.pas.librarianrest.repository.exceptions.ObjectNotFoundException;
+import pl.lodz.pas.librarianrest.repository.user.User;
 import pl.lodz.pas.librarianrest.repository.user.UsersRepository;
 import pl.lodz.pas.librarianrest.services.dto.NewUserDto;
 import pl.lodz.pas.librarianrest.services.dto.UserDto;
@@ -82,7 +83,7 @@ public class UsersService {
                 .map(user -> mapper.map(user));
     }
 
-    public boolean updateUserByLogin(NewUserDto userDto) {
+    public boolean updateUserByLogin(UserDto userDto) {
 
         var login = userDto.getLogin();
 
@@ -92,7 +93,7 @@ public class UsersService {
             return false;
         }
 
-        var user = mapper.map(userDto);
+        var user = mapper.map(userDto, optUser.get().getPassword());
 
         try {
             repository.updateUser(user);
