@@ -27,7 +27,6 @@
         <role-name>USER</role-name>
     </security-role>
 
-
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>Safe read-only</web-resource-name>
@@ -50,6 +49,7 @@
             <web-resource-name>Admin resources</web-resource-name>
             <url-pattern>/user/*</url-pattern>
             <url-pattern>/users/*</url-pattern>
+            <http-method-omission>OPTIONS</http-method-omission>
         </web-resource-collection>
         <auth-constraint>
             <role-name>ADMIN</role-name>
@@ -64,6 +64,7 @@
             <url-pattern>/element/*</url-pattern>
             <url-pattern>/copy/*</url-pattern>
             <url-pattern>/lending/*</url-pattern>
+            <http-method-omission>OPTIONS</http-method-omission>
         </web-resource-collection>
         <auth-constraint>
             <role-name>EMPLOYEE</role-name>
@@ -75,6 +76,7 @@
             <web-resource-name>self/user</web-resource-name>
             <url-pattern>/self/user</url-pattern>
             <http-method-omission>GET</http-method-omission>
+            <http-method-omission>OPTIONS</http-method-omission>
         </web-resource-collection>
         <auth-constraint />
     </security-constraint>
