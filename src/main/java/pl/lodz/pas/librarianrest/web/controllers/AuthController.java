@@ -2,7 +2,6 @@ package pl.lodz.pas.librarianrest.web.controllers;
 
 import pl.lodz.pas.librarianrest.security.AuthService;
 import pl.lodz.pas.librarianrest.security.objects.Credentials;
-import pl.lodz.pas.librarianrest.web.controllers.objects.Token;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -12,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -30,6 +30,7 @@ public class AuthController {
     private AuthService authService;
 
     @Path("login")
+    @Produces("application/jwt")
     @POST
     public Response login(@NotNull @Valid Credentials credentials) {
 
@@ -38,11 +39,12 @@ public class AuthController {
         if (token == null) return Response.status(UNAUTHORIZED).build();
 
         return Response
-                .ok(new Token(token))
+                .ok(token)
                 .build();
     }
 
     @Path("token")
+    @Produces("application/jwt")
     @GET
     public Response token() {
 
@@ -55,7 +57,7 @@ public class AuthController {
         if (newToken == null) return Response.status(UNAUTHORIZED).build();
 
         return Response
-                .ok(new Token(newToken))
+                .ok(newToken)
                 .build();
     }
 }

@@ -61,7 +61,7 @@ public class TokenProvider {
                     .build()
                     .parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
+        } catch (Exception e) {
             return false;
         }
     }
